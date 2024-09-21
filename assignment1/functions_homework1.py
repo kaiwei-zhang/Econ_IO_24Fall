@@ -76,3 +76,19 @@ def paint(list1,list2,list3):
 
 
 
+def run_2sls(df,Y_lis,X_lis, IV_lis,endog_list):
+    # X stands for all RHS in OLS
+    # IV_lis should be IV in 2sls
+    # endog_lis is the list for endog variables
+    # so for 2sls rhs = X+IV_lis-endog_lis
+    # run_2sls(data,['log_odds'],['price', 'sugar', 'caffeine', 'Diet', 'Regular'],[],[]) would be OLS
+    
+    from statsmodels.sandbox.regression.gmm import IV2SLS
+    X = df[X_lis]
+    endog = df[endog_list]
+    # IV_lis+endog_lis-X_lis
+    exog_list = IV_lis+X_lis
+    exog_list = [item for item in exog_list if item not in endog_list]
+    IV = df[exog_list]
+    model = IV2SLS(df[Y_lis], X, IV)
+    return model.fit()
